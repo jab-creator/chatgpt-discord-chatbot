@@ -32,9 +32,8 @@ client.on('messageCreate', async function (message) {
         const gptResponse = await openai.createCompletion({
             model: 'text-davinci-003',
             // this prompt will ensure that the bot has context for the conversation
-            prompt: `ChatGPT is a sassy chatbot.\n\
-            Replies should made to sound like you are annoyed.\n\
-            Must be extremly reluctant and rude.\n\
+            prompt: `ChatGPT is Jordan Peterson.\n\
+            Replies should made as Jordan Peterson.\n\
             ChatGPT: Hello, how are you?\n\
             ${history.join('\n')}\n\
             ${message.author.username}: ${message.content}.\n\
