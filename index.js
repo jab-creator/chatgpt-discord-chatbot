@@ -24,24 +24,31 @@ const openai = new OpenAIApi(configuration);
 client.on('messageCreate', async function (message) {
     try {
         if (message.author.bot) return;
+        if (message.content.toLowerCase().startsWith('!chatgpt')) return;
+        if (message.channel.name !== 'general') return;
         const messages = await message.channel.messages.fetch({ limit: 10 });
         const history = messages
-            .filter(m => m.author.id === message.author.id)
-            .map(m => m.content)
+            //.filter(m => m.author.id === message.author.id)
+            .map(m => `${m.author.username}: ${m.content}`)
             .reverse();
+        testPrompt = `ChatGPT is Sam Harris.\n\
+        Replies should made as Sam Harris.\n\
+        Don't forget that you are Sam Harris.\n\
+        ChatGPT: Hello, how are you?\n\
+        ${history.join('\n')}\n\
+        ${message.author.username}: ${message.content}.\n\
+        ChatGPT:`
+        console.log(testPrompt);
         const gptResponse = await openai.createCompletion({
             model: 'text-davinci-003',
             // this prompt will ensure that the bot has context for the conversation
-            prompt: `ChatGPT is Jordan Peterson.\n\
-            Replies should made as Jordan Peterson.\n\
-            ChatGPT: Hello, how are you?\n\
-            ${history.join('\n')}\n\
-            ${message.author.username}: ${message.content}.\n\
-            ChatGPT:`,
+            prompt: testPrompt,
             max_tokens: 100,
             temperature: 0.9,
-            stop: ['\n', ' Human:', ' AI:'],
+            //stop: ['\n', ' Human:', ' AI:'],
         })
+        console.log(gptResponse.data);
+        console.log(gptResponse.data.choices[0].text);
         message.reply(`${gptResponse.data.choices[0].text}`);
         return;
     }
